@@ -1,0 +1,480 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --color-primary: #2196F3;
+  --color-surface-bg: #F5F7FB;
+  --color-sidebar-bg: #FFFFFF;
+}
+
+:root {
+  --ha-bg: #F5F7FB;
+  --ha-surface: #FFFFFF;
+  --ha-primary: #2196F3;
+  --ha-secondary: #4F46E5;
+  --ha-green: #22C55E;
+  --ha-orange: #F59E0B;
+  --ha-red: #EF4444;
+  --ha-text: #111827;
+  --ha-muted: #64748B;
+  --ha-border: #E5E7EB;
+  --ha-shadow: 0 18px 45px rgba(15, 23, 42, 0.09), 0 2px 8px rgba(15, 23, 42, 0.04);
+  --ha-shadow-soft: 0 12px 32px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.80);
+  --ha-shadow-hover: 0 26px 60px rgba(15, 23, 42, 0.14), 0 10px 22px rgba(33, 150, 243, 0.08);
+  --ha-shadow-pressed: 0 7px 16px rgba(15, 23, 42, 0.12), inset 0 2px 5px rgba(15, 23, 42, 0.12);
+  --ha-gradient: linear-gradient(90deg, #2196F3, #4F46E5);
+  --ha-gradient-soft: linear-gradient(135deg, rgba(255,255,255,0.94), rgba(248,250,252,0.82));
+  --ha-ring: 0 0 0 1px rgba(255,255,255,0.70) inset;
+  --ha-perspective: 1200px;
+}
+
+html {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  @apply antialiased min-h-screen relative selection:bg-blue-200 selection:text-blue-900;
+  background: var(--ha-bg);
+  color: var(--ha-text);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+  background-color: var(--ha-bg);
+  background-image: 
+    radial-gradient(at 8% 8%, rgba(33, 150, 243, 0.10) 0px, transparent 34%),
+    radial-gradient(at 90% 0%, rgba(79, 70, 229, 0.10) 0px, transparent 36%),
+    radial-gradient(at 50% 80%, rgba(34, 197, 94, 0.07) 0px, transparent 30%);
+  pointer-events: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply rounded-full transition-colors;
+  background: #cbd5e1;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* HealthAtlas design system */
+.glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(24px) saturate(155%);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  box-shadow: var(--ha-shadow-soft), var(--ha-ring);
+}
+.glass-card {
+  position: relative;
+  isolation: isolate;
+  background: var(--ha-gradient-soft);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 24px;
+  box-shadow: var(--ha-shadow-soft), var(--ha-ring);
+  transform: translateZ(0);
+  transform-style: preserve-3d;
+  transition: transform 0.32s cubic-bezier(.2,.8,.2,1), box-shadow 0.32s ease, border-color 0.32s ease, background 0.32s ease, filter 0.32s ease;
+  will-change: transform;
+}
+.glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,255,255,0.18) 42%, rgba(33,150,243,0.05));
+  opacity: 0.86;
+  pointer-events: none;
+}
+.glass-card::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: calc(24px - 1px);
+  background: linear-gradient(145deg, rgba(255,255,255,0.14), rgba(33,150,243,0.045));
+  opacity: 0;
+  transition: opacity 0.32s ease;
+  pointer-events: none;
+}
+.glass-card:hover {
+  border-color: rgba(33, 150, 243, 0.22);
+  box-shadow: var(--ha-shadow-hover);
+  transform: translateY(-5px) rotateX(0.6deg) rotateY(-0.5deg);
+}
+.glass-card:hover::after {
+  opacity: 1;
+}
+.glass-nav {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(26px) saturate(160%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.76);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.07), inset 0 -1px 0 rgba(255, 255, 255, 0.76);
+}
+.sidebar-glass {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(28px) saturate(150%);
+  border-right: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 18px 0 48px rgba(15, 23, 42, 0.08);
+}
+
+main {
+  animation: ha-page-in 0.35s ease both;
+  perspective: var(--ha-perspective);
+}
+
+main h1 {
+  color: var(--ha-text);
+  font-size: clamp(2rem, 2.5vw, 2.25rem);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+main h2 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+main h3 {
+  font-size: 1.125rem;
+  line-height: 1.3;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+main p,
+main td,
+main li {
+  color: inherit;
+}
+
+main label,
+main th {
+  color: #8EA0BA !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.055em !important;
+}
+
+main select,
+main input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([class*="bg-transparent"]),
+main textarea:not([class*="bg-transparent"]),
+.auth-shell input {
+  min-height: 48px;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(226, 232, 240, 0.92) !important;
+  color: var(--ha-text) !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.045), inset 0 1px 0 rgba(255,255,255,0.90);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+main select:hover,
+main input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([class*="bg-transparent"]):hover,
+main textarea:not([class*="bg-transparent"]):hover,
+.auth-shell input:hover {
+  border-color: rgba(33, 150, 243, 0.34) !important;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.065), inset 0 1px 0 rgba(255,255,255,0.95);
+  transform: translateY(-1px);
+}
+
+main select:focus,
+main input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([class*="bg-transparent"]):focus,
+main textarea:not([class*="bg-transparent"]):focus,
+.auth-shell input:focus {
+  border-color: rgba(33, 150, 243, 0.65) !important;
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.12), 0 16px 32px rgba(33, 150, 243, 0.12) !important;
+  transform: translateY(-2px);
+}
+
+main button,
+main a[class*="rounded"],
+.auth-shell button,
+.auth-shell a[class*="rounded"] {
+  transform-style: preserve-3d;
+  transition: transform 0.25s cubic-bezier(.2,.8,.2,1), box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease, filter 0.25s ease;
+}
+
+main button:hover:not(:disabled),
+main a[class*="rounded"]:hover,
+.auth-shell button:hover:not(:disabled),
+.auth-shell a[class*="rounded"]:hover {
+  transform: translateY(-2px) scale(1.012);
+}
+
+main button:active:not(:disabled),
+main a[class*="rounded"]:active,
+.auth-shell button:active:not(:disabled),
+.auth-shell a[class*="rounded"]:active {
+  transform: translateY(1px) scale(0.985);
+  box-shadow: var(--ha-shadow-pressed) !important;
+}
+
+main button[class*="bg-blue-600"],
+main a[class*="bg-blue-600"],
+.auth-shell button[class*="bg-slate-900"],
+.auth-shell button[class*="bg-blue-600"],
+.auth-shell a[class*="bg-blue-600"] {
+  background: var(--ha-gradient) !important;
+  box-shadow: 0 16px 30px rgba(33, 150, 243, 0.26), inset 0 1px 0 rgba(255,255,255,0.28);
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+}
+
+main button[class*="bg-blue-600"]:hover:not(:disabled),
+main a[class*="bg-blue-600"]:hover,
+.auth-shell button[class*="bg-slate-900"]:hover:not(:disabled),
+.auth-shell button[class*="bg-blue-600"]:hover:not(:disabled),
+.auth-shell a[class*="bg-blue-600"]:hover {
+  box-shadow: 0 22px 42px rgba(79, 70, 229, 0.30), 0 0 0 5px rgba(33,150,243,0.08);
+  filter: saturate(1.08);
+}
+
+main button svg,
+main a[class*="rounded"] svg,
+.auth-shell button svg,
+.auth-shell a[class*="rounded"] svg {
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+main button:hover:not(:disabled) svg,
+main a[class*="rounded"]:hover svg,
+.auth-shell button:hover:not(:disabled) svg,
+.auth-shell a[class*="rounded"]:hover svg {
+  transform: translateZ(12px) scale(1.07);
+}
+
+main table {
+  border-collapse: separate !important;
+  border-spacing: 0;
+}
+
+main thead tr {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(248, 250, 252, 0.92) !important;
+  backdrop-filter: blur(12px);
+}
+
+main tbody tr {
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+main tbody tr:nth-child(even) {
+  background: rgba(245, 247, 251, 0.55);
+}
+
+main tbody tr:hover {
+  background: rgba(33, 150, 243, 0.055) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+}
+
+main .recharts-wrapper,
+main .recharts-surface {
+  overflow: visible;
+  filter: drop-shadow(0 14px 20px rgba(37, 99, 235, 0.08));
+}
+
+main .recharts-cartesian-grid line {
+  stroke: #EAF0F8;
+}
+
+main .leaflet-container {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  background: #EDF4FF;
+}
+
+.ha-gradient-text {
+  background: var(--ha-gradient);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.ha-soft-blue {
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.13), rgba(33, 150, 243, 0.04));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.82);
+}
+
+.ha-soft-green {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.14), rgba(34, 197, 94, 0.04));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.82);
+}
+
+.ha-soft-orange {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.82);
+}
+
+.ha-soft-red {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.13), rgba(239, 68, 68, 0.04));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.82);
+}
+
+.auth-shell {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(33, 150, 243, 0.14), transparent 28%),
+    radial-gradient(circle at 82% 6%, rgba(79, 70, 229, 0.16), transparent 30%),
+    var(--ha-bg);
+  perspective: var(--ha-perspective);
+}
+
+.auth-shell > * {
+  animation: ha-rise-in 0.5s ease both;
+}
+
+.sidebar-glass a,
+.sidebar-glass button {
+  transform-style: preserve-3d;
+}
+
+.sidebar-glass a:hover,
+.sidebar-glass button:hover {
+  box-shadow: 0 12px 26px rgba(33, 150, 243, 0.10);
+}
+
+.sidebar-glass a[class*="bg-blue-50"] {
+  box-shadow: 0 14px 28px rgba(33, 150, 243, 0.14), inset 0 1px 0 rgba(255,255,255,0.80);
+}
+
+.sidebar-glass a[class*="bg-blue-50"] svg {
+  filter: drop-shadow(0 5px 8px rgba(33, 150, 243, 0.24));
+}
+
+.glass-nav span[class*="bg-green-100"] {
+  box-shadow: 0 10px 20px rgba(34, 197, 94, 0.14), inset 0 1px 0 rgba(255,255,255,0.75);
+}
+
+.glass-nav button {
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255,255,255,0.90) !important;
+}
+
+.glass-card [class*="rounded-full"],
+.glass-card [class*="rounded-2xl"],
+.glass-card [class*="rounded-3xl"] {
+  backface-visibility: hidden;
+}
+
+.glass-card:has(.animate-spin),
+.glass-card:has([class*="Loading"]),
+.glass-card:has([class*="loader"]) {
+  animation: ha-float-soft 3.8s ease-in-out infinite;
+}
+
+.ha-float {
+  animation: ha-float-soft 5s ease-in-out infinite;
+}
+
+.ha-tilt {
+  transform-style: preserve-3d;
+}
+
+.ha-tilt:hover {
+  transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+}
+
+.ha-premium-panel {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(239,246,255,0.82));
+  border: 1px solid rgba(255,255,255,0.72);
+  box-shadow: var(--ha-shadow);
+}
+
+.ha-premium-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.48) 42%, transparent 72%);
+  transform: translateX(-120%);
+  transition: transform 0.8s ease;
+  pointer-events: none;
+}
+
+.ha-premium-panel:hover::before {
+  transform: translateX(120%);
+}
+
+@keyframes ha-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ha-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ha-float-soft {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .glass-card:hover,
+  main button:hover:not(:disabled),
+  main a[class*="rounded"]:hover,
+  .auth-shell button:hover:not(:disabled),
+  .auth-shell a[class*="rounded"]:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 768px) {
+  main {
+    padding-inline: 1rem !important;
+  }
+
+  main h1 {
+    font-size: 2rem;
+  }
+
+  .glass-card {
+    border-radius: 20px;
+  }
+}
